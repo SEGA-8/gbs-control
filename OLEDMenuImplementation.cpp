@@ -9,6 +9,7 @@
 #include "src/WebSocketsServer.h"
 #include "fonts.h"
 #include "OSDManager.h"
+#include <LittleFS.h>
 
 typedef TV5725<GBS_ADDR> GBS;
 extern void applyPresets(uint8_t videoMode);
@@ -138,13 +139,13 @@ bool presetSelectionMenuHandler(OLEDMenuManager *manager, OLEDMenuItem *item, OL
 bool presetsCreationMenuHandler(OLEDMenuManager *manager, OLEDMenuItem *item, OLEDMenuNav, bool)
 {
     SlotMetaArray slotsObject;
-    File slotsBinaryFileRead = SPIFFS.open(SLOTS_FILE, "r");
+    File slotsBinaryFileRead = LittleFS.open(SLOTS_FILE, "r");
     manager->clearSubItems(item);
     int curNumSlot = 0;
     if (slotsBinaryFileRead) {
         slotsBinaryFileRead.read((byte *)&slotsObject, sizeof(slotsObject));
         slotsBinaryFileRead.close();
-        for (int i; i < SLOTS_TOTAL; ++i) {
+        for (int i = 0; i < SLOTS_TOTAL; ++i) {
             const SlotMeta &slot = slotsObject.slot[i];
             if (strcmp(EMPTY_SLOT_NAME, slot.name) == 0 || !strlen(slot.name)) {
                 continue;
